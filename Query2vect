@@ -1,0 +1,44 @@
+# Load libraries
+import pandas as pd
+import numpy as np
+import pandas_gbq
+from google.oauth2 import service_account
+from google.cloud import storage
+
+
+import nltk
+from nltk import word_tokenize
+nltk.download('punkt')
+
+import fasttext
+
+import sys
+
+ 
+#############
+# We only load the data once, and save it as a txt file
+
+# BigQuery scripts
+#sql_queries = open("input/search_by_users.txt", "r")
+#sql_queries=sql_queries.read()
+    
+
+
+
+dim = int(sys.argv[1])
+minCount = int( sys.argv[2])
+ws = int(sys.argv[3])
+epoch = int(sys.argv[4])
+
+
+model = fasttext.train_unsupervised('output/tokenize_queries_v2.txt',
+                                                 model='skipgram',
+                                                  dim=dim,
+                                                  minCount=minCount,
+                                                  ws=ws,
+                                                  wordNgrams=3,
+                                                  verbose=True,
+                                                  epoch=epoch)
+
+
+model.save_model("output/model_query_dim"+str(dim)+"_skipgram_minCount_"+str(minCount)+"_ws"+str(ws)+"_epoch"+str(epoch)+"_v2.bin")
